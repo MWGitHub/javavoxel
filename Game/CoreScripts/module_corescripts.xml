@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_corescripts" default="compile.module.corescripts">
+  <dirname property="module.corescripts.basedir" file="${ant.file.module_corescripts}"/>
+  
+  <property name="module.jdk.home.corescripts" value="${jdk.home.1.7}"/>
+  <property name="module.jdk.bin.corescripts" value="${jdk.bin.1.7}"/>
+  <property name="module.jdk.classpath.corescripts" value="jdk.classpath.1.7"/>
+  
+  <property name="compiler.args.corescripts" value="${compiler.args}"/>
+  
+  <property name="corescripts.output.dir" value="/src/main/resources/CoreScripts/../out/production/CoreScripts"/>
+  <property name="corescripts.testoutput.dir" value="/src/main/resources/CoreScripts/../out/test/CoreScripts"/>
+  
+  <path id="corescripts.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="corescripts.module.production.classpath">
+    <path refid="${module.jdk.classpath.corescripts}"/>
+    <path refid="library.groovy-all-2.1.1.classpath"/>
+    <pathelement location="${game.output.dir}"/>
+  </path>
+  
+  <path id="corescripts.runtime.production.module.classpath">
+    <pathelement location="${corescripts.output.dir}"/>
+    <path refid="library.groovy-all-2.1.1.classpath"/>
+    <path refid="game.runtime.production.module.classpath"/>
+  </path>
+  
+  <path id="corescripts.module.classpath">
+    <path refid="${module.jdk.classpath.corescripts}"/>
+    <pathelement location="${corescripts.output.dir}"/>
+    <path refid="library.groovy-all-2.1.1.classpath"/>
+    <pathelement location="${game.testoutput.dir}"/>
+    <pathelement location="${game.output.dir}"/>
+  </path>
+  
+  <path id="corescripts.runtime.module.classpath">
+    <pathelement location="${corescripts.testoutput.dir}"/>
+    <pathelement location="${corescripts.output.dir}"/>
+    <path refid="library.groovy-all-2.1.1.classpath"/>
+    <path refid="game.runtime.module.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.corescripts">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.corescripts">
+    <patternset refid="excluded.from.module.corescripts"/>
+  </patternset>
+  
+  <path id="corescripts.module.sourcepath">
+    <dirset dir="/src/main/resources/CoreScripts">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.corescripts" depends="compile.module.corescripts.production,compile.module.corescripts.tests" description="Compile module CoreScripts"/>
+  
+  <target name="compile.module.corescripts.production" depends="register.custom.compilers,compile.module.game" description="Compile module CoreScripts; production classes">
+    <mkdir dir="${corescripts.output.dir}"/>
+    <groovyc destdir="${corescripts.output.dir}" fork="yes">
+      <src refid="corescripts.module.sourcepath"/>
+      <classpath refid="corescripts.module.production.classpath"/>
+      <patternset refid="excluded.from.compilation.corescripts"/>
+      <javac debug="${compiler.debug}">
+        <compilerarg line="${compiler.args.corescripts}"/>
+      </javac>
+    </groovyc>
+    <instrumentIdeaExtensions destdir="${corescripts.output.dir}">
+      <compilerarg line="${compiler.args.corescripts}"/>
+      <bootclasspath refid="corescripts.module.bootclasspath"/>
+      <classpath refid="corescripts.module.production.classpath"/>
+      <src refid="corescripts.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.corescripts"/>
+    </instrumentIdeaExtensions>
+    
+    <copy todir="${corescripts.output.dir}">
+      <fileset dir="/src/main/resources/CoreScripts/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.corescripts.tests" depends="register.custom.compilers,compile.module.corescripts.production" description="compile module CoreScripts; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.corescripts" description="cleanup module">
+    <delete dir="${corescripts.output.dir}"/>
+    <delete dir="${corescripts.testoutput.dir}"/>
+  </target>
+</project>

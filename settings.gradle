@@ -1,0 +1,17 @@
+include "AssetEditor"
+include "Game"
+include "ResourceManager"
+include "EntitySystem"
+include "EntitySpatial"
+include "TerrainSystem"
+include "PGUtil"
+include "Physics"
+include "PGUI"
+include "Debug"
+include "Input"
+
+rootProject.children.each { project ->
+    project.buildFileName = "${project.name}.gradle"
+    assert project.projectDir.isDirectory()
+    assert project.buildFile.isFile()
+}

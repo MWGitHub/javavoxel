@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assetpack distributor="MW" name="Game" version="1.0">
+    <description>Assets for the game.</description>
+    <license>No License</license>
+    <assets>
+        <asset categories="" name="Ninja" tags="" type="model">
+            <description/>
+            <license/>
+            <file path="Core/Models/Ninja/Ninja.mesh.j3o" type="scene"/>
+        </asset>
+        <asset categories="" name="Bullet" tags="" type="model">
+            <description/>
+            <license/>
+            <file path="Core/Models/Bullet/Bullet.blend" type="scene"/>
+        </asset>
+    </assets>
+</assetpack>

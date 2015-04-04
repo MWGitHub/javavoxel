@@ -1,0 +1,14 @@
+mainClassName = "com.halboom.pgt.terrainsystem.App"
+
+dependencies {
+    compile libraries.jme3
+    compile project(':PGUtil')
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'Terrain System',
+                'Main-Class': 'com.halboom.pgt.terrainsystem.App'
+    }
+}

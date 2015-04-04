@@ -1,0 +1,16 @@
+mainClassName = "com.halboom.pgt.physics.App"
+
+dependencies {
+    compile project(':EntitySystem')
+    compile project(':PGUtil')
+    compile project(':EntitySpatial')
+    compile libraries.jme3
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'Collision System',
+                'Main-Class': 'com.halboom.pgt.physics.App'
+    }
+}

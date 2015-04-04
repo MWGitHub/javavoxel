@@ -1,0 +1,16 @@
+mainClassName = "com.halboom.pgt.debug.App"
+
+dependencies {
+    compile libraries.jme3
+    compile project(':Input')
+    compile libraries.slf4j
+    compile libraries.log4j
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'PGT Debug',
+                'Main-Class': 'com.halboom.pgt.debug.App'
+    }
+}

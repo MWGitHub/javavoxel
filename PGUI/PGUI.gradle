@@ -1,0 +1,14 @@
+mainClassName = "com.halboom.pgt.pgui.App"
+
+dependencies {
+    compile libraries.jme3
+    compile project(':Input')
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'PugGame User Interface',
+                'Main-Class': 'com.halboom.pgt.pgui.App'
+    }
+}

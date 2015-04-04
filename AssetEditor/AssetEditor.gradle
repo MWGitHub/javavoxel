@@ -1,0 +1,16 @@
+mainClassName = "com.halboom.pgt.asseteditor.App"
+
+dependencies {
+    compile libraries.weblaf
+    compile libraries.xfiledialog
+    compile libraries.commonsio
+    compile libraries.miglayout
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'Asset Editor',
+                'Main-Class': 'com.halboom.pgt.asseteditor.App'
+    }
+}

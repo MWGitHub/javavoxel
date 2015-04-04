@@ -1,0 +1,183 @@
+package scripts
+
+import com.halboom.pgt.entitysystem.Entity
+import com.halboom.pgt.physics.simple.shapes.Bounds
+import com.jme3.math.Vector3f
+import com.submu.pug.game.objects.Player
+import core.EventFunctions
+import core.ScriptBindings
+
+/**
+ * Created with IntelliJ IDEA.
+ * User: MW
+ * Date: 5/14/13
+ * Time: 3:14 PM
+ * Map specific scripts.
+ * Class that can be used with a low chance of breaking compatibility are:
+ *  Vector3f (jme)
+ *  Quaternion (jme)
+ *  Entity
+ */
+class MapScripts {
+    private ScriptBindings bindings;
+
+    MapScripts(ScriptBindings bindings) {
+        this.bindings = bindings
+
+        Shoot shoot = new Shoot(bindings)
+        Jump jump = new Jump(bindings)
+
+        bindings.addEventBinding(ScriptBindings.EVENT_MAP_INITIALIZATION, new EventFunctions() {
+            @Override
+            void onMapInitialization() {
+                Entity entity = bindings.entityBindings.getByName("Player1")
+                bindings.playerBindings.setControlledActor(entity, bindings.playerBindings.getLocalPlayer())
+                /*
+                bindings.playerBindings.setMoney(bindings.playerBindings.getLocalPlayer(), 50000000)
+                int index = bindings.entityBindings.getAbilityIndex(entity, "Shoot")
+                bindings.entityBindings.upgradeAbility(entity, index, "doubleShot", 1)
+                bindings.entityBindings.upgradeAbility(entity, index, "longCooldown", 1)
+                index = bindings.entityBindings.getAbilityIndex(entity, "BusterPassives")
+                bindings.entityBindings.upgradeAbility(entity, index, "healthUp", 1)
+                bindings.entityBindings.setSkillPoints(entity, 500)
+                */
+            }
+        })
+        // Increase the cooldown when cooldown ability is learned.
+        bindings.addEventBinding(ScriptBindings.EVENT_ABILITY_UPGRADE, new EventFunctions() {
+            @Override
+            void onAbilityUpgrade(Entity entity, int abilityIndex, String upgrade, int level) {
+                if (upgrade == "longCooldown") {
+                    float cooldown = bindings.entityBindings.getAbilityCooldown(entity, abilityIndex)
+                    bindings.entityBindings.setAbilityCooldown(entity, abilityIndex, (float) cooldown * 4)
+                }
+            }
+        })
+        bindings.addEventBinding(ScriptBindings.EVENT_ABILITY_UPGRADE, new EventFunctions() {
+            @Override
+            void onAbilityUpgrade(Entity entity, int abilityIndex, String upgrade, int level) {
+                if (upgrade == "healthUp") {
+                    bindings.entityBindings.setMaxHealth(entity, 10)
+                }
+            }
+        })
+        // Enter start stage 0.
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_ENTER, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+                if (name == "StartWave" && bindings.entityBindings.isActor(entity)) {
+                    Entity enemy = bindings.creator.createActor("Enemy", bindings.playerBindings.getNeutralHostilePlayer().id)
+                    Vector3f center = bindings.getRegionCenter("SpawnLocation")
+                    bindings.entityBindings.setPosition(enemy, center.x, center.y, center.z)
+                }
+            }
+        })
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_INSIDE, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+            }
+        })
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_LEAVE, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+            }
+        })
+
+        // Stage 1 trigger regions
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_ENTER, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+                if (name == "Level1Warp") {
+                    Vector3f destination = bindings.getRegionCenter("Level1Destination")
+                    bindings.entityBindings.setPosition(entity, destination.x, destination.y, destination.z)
+                }
+            }
+        })
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_ENTER, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+                if (name == "Level1Return") {
+                    Vector3f destination = bindings.getRegionCenter("StageSelectSpawn")
+                    bindings.entityBindings.setPosition(entity, destination.x, destination.y, destination.z)
+                }
+            }
+        })
+        // Spawn enemies in level 1.
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_ENTER, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+                if (name == "Level1Begin" && bindings.entityBindings.isActor(entity)) {
+                    Vector3f location = bindings.getRegionCenter("Level1Spawn1")
+                    Entity enemy = bindings.creator.createActor("Enemy", bindings.playerBindings.neutralHostilePlayer.id)
+                    bindings.entityBindings.setPosition(enemy, location.x, location.y, location.z)
+                    location = bindings.getRegionCenter("Level1Spawn2")
+                    enemy = bindings.creator.createActor("Enemy", bindings.playerBindings.neutralHostilePlayer.id)
+                    bindings.entityBindings.setPosition(enemy, location.x, location.y, location.z)
+                    location = bindings.getRegionCenter("Level1Spawn3")
+                    enemy = bindings.creator.createActor("Enemy", bindings.playerBindings.neutralHostilePlayer.id)
+                    bindings.entityBindings.setPosition(enemy, location.x, location.y, location.z)
+                    bindings.setVariable("Area 1 Spawned", true)
+                }
+            }
+        })
+
+        // Enemy AI
+        bindings.addEventBinding(ScriptBindings.EVENT_AI_COMBAT, new EventFunctions() {
+            @Override
+            void onCombat(Entity entity, Entity target, String script) {
+                if (script == "Shoot") {
+                    Vector3f direction = bindings.getDirectionToPoint(
+                        bindings.getAbilitySpawn(entity, bindings.getAbilityName(entity, 0)),
+                        bindings.entityBindings.getCenter(target))
+                    bindings.entityBindings.cast(entity, 0, direction)
+                    bindings.entityBindings.followEntity(entity, null)
+                    bindings.entityBindings.setTarget(entity, target)
+                }
+            }
+        })
+        // Boss Spawning Check
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_LEAVE, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+                if (name == "Level1Area" && bindings.getVariable("Area 1 Spawned") == true) {
+                    List<Entity> entities = bindings.getEntitiesInRegion(name)
+                    if (entities != null) {
+                        boolean areEnemiesAlive = false
+                        for (Entity inner : entities) {
+                            if (bindings.entityBindings.getOwner(inner) == bindings.playerBindings.neutralHostilePlayer) {
+                                areEnemiesAlive = true
+                                break
+                            }
+                        }
+                        if (!areEnemiesAlive) {
+                            Vector3f location = bindings.getRegionCenter("Level1Boss")
+                            Entity enemy = bindings.creator.createActor("Level1Boss", bindings.playerBindings.neutralHostilePlayer.id)
+                            bindings.entityBindings.setPosition(enemy, location.x, location.y, location.z)
+                            bindings.setVariable("Area 1 Spawned", false)
+                        }
+                    }
+                }
+            }
+        })
+
+        // Boost
+        bindings.addEventBinding(ScriptBindings.EVENT_REGION_ENTER, new EventFunctions() {
+            @Override
+            void onRegionEvent(String name, Bounds bounds, Entity entity) {
+                if (name == "Level1Boost") {
+                    bindings.entityBindings.setAcceleration(entity, 50, 50, 50)
+                }
+            }
+        })
+
+        // Upgrade Menu
+        bindings.addEventBinding(ScriptBindings.EVENT_KEY_PRESSED, new EventFunctions() {
+            @Override
+            void onKeyPressed(String pressedKey, Player player, boolean isGUIActive) {
+                if (pressedKey == ScriptBindings.ACTION_USE) {
+                    bindings.toggleUpgradeMenu()
+                }
+            }
+        })
+    }
+}

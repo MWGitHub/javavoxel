@@ -1,0 +1,14 @@
+mainClassName = "com.halboom.pgt.entityspatial.App"
+
+dependencies {
+    compile libraries.jme3
+    compile project(':EntitySystem')
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'Entity Spatial System',
+                'Main-Class': 'com.halboom.pgt.entityspatial.App'
+    }
+}

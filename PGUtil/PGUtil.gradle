@@ -1,0 +1,12 @@
+mainClassName = "com.halboom.pgt.pgutil.App"
+
+dependencies {
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'PugGame Utility Library',
+                'Main-Class': 'com.halboom.pgt.pgutil.App'
+    }
+}

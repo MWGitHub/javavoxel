@@ -1,0 +1,72 @@
+apply plugin: 'java'
+apply plugin: 'sonar-runner'
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.2-rc1'
+    }
+}
+
+// Libraries applications use.
+ext.libraries = [
+    junit: "junit:junit:4.11",
+    guava: "com.google.guava:guava:14.0.1",
+    gson: "com.google.code.gson:gson:2.2.2",
+    jackson: "com.fasterxml.jackson.core:jackson-databind:2.2.0",
+    log4j: "log4j:log4j:1.2.17",
+    slf4j: "org.slf4j:slf4j-log4j12:1.7.5",
+    commonsio: "commons-io:commons-io:2.4",
+    groovy: "org.codehaus.groovy:groovy-all:2.1.2",
+
+    weblaf: files("lib/WebLookAndFeel.jar"),
+    xfiledialog: files("lib/xfiledialog.jar"),
+    miglayout: "com.miglayout:miglayout-swing:4.2",
+
+    jme3: files(fileTree("lib/jme3")),
+    zayes: files(fileTree("lib/jme3-contrib/Zay-ES"))
+]
+
+allprojects {
+    apply plugin: 'idea'
+
+    version = '0.0.1'
+
+    repositories {
+        mavenCentral()
+    }
+
+    apply plugin: 'fatjar'
+
+    fatJar {
+        manifest {
+            attributes 'Implementation-Title': 'Project Pug',
+                    'Implementation-Version': version,
+                    'Built-By': System.getProperty('user.name'),
+                    'Built-Date': new Date(),
+                    'Built-JDK': System.getProperty('java.version'),
+                    'Built-Gradle': gradle.gradleVersion
+        }
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+    apply plugin: 'application'
+    apply plugin: 'findbugs'
+}
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://localhost:9090/"
+        property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9092/sonar"
+        property "sonar.jdbc.driverClassName", "org.hibernate.dialect.H2Dialect"
+        property "sonar.username", "admin"
+        property "sonar.password", "admin"
+        property "sonar.exclusions", "com/halboom/pgt/*/App.java,**/*Component.java"
+        property "sonar.forceAnalysis", "true"
+    }
+}

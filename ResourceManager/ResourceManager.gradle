@@ -1,0 +1,15 @@
+mainClassName = "com.halboom.pgt.resources.App"
+
+dependencies {
+    compile libraries.commonsio
+    compile libraries.guava
+    compile libraries.jme3
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'Resource Manager',
+                'Main-Class': 'com.halboom.pgt.resources.App'
+    }
+}

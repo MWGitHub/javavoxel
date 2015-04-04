@@ -1,0 +1,30 @@
+syntax: glob
+out/
+*.dll
+assets/
+build/
+dist/
+logs/
+nbproject/private/profiler/
+Config.json
+.idea/
+.sonar/
+lib/
+target/
+.gradle/
+.classpath
+.project
+gradle-app.setting
+*.ipr
+*.iws
+*.iml
+*.jar
+*.zip
+pom.xml
+*.metadata
+*.git
+*.log
+README.md
+.gitignore
+.gitattributes
+Working Media

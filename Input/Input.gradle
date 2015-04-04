@@ -1,0 +1,13 @@
+mainClassName = "com.halboom.pgt.input.App"
+
+dependencies {
+    compile libraries.jme3
+    testCompile libraries.junit
+}
+
+fatJar {
+    manifest {
+        attributes 'Implementation-Title': 'PGT Input',
+                'Main-Class': 'com.halboom.pgt.input.App'
+    }
+}
